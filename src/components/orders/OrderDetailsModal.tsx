@@ -252,7 +252,7 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                             value={data?.data?.status}
                             onChange={(e) => handleUpadteStatus(e.target.value)}
                           >
-                            {["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => (
+                            {["Pending", "Shipped", "Cancelled", "Delivered", "Out For Delivery", "Cancelled/Refunded", "Processing"].map((status) => (
                               <option key={status} value={status}>{status}</option>
                             ))}
                           </select>
@@ -263,7 +263,8 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                         <>
                           {data?.data?.payment_status !== 'unpaid' && (
                             <div className="mt-4">
-                              {(data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Failed') && (
+                              {/* {(data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Failed') && ( */}
+                              {data?.data?.status !== 'Cancelled/Refunded' && (
                                 <button
                                   className='bg-red-500 p-2 text-white rounded-md hover:bg-red-600'
                                   onClick={() => setShowRefundForm(!showRefundForm)}
@@ -454,7 +455,7 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
               </div>
 
               {/* Shiprocket Actions */}
-              {data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Cancelled' && data?.data?.status !== 'Failed' && data?.data?.status !== 'Cancellation Requested' && (
+              {data?.data?.status !== 'Delivered' && data?.data?.status !== 'Failed'  && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'RTO' && data?.data?.status !== 'HELDUP' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Cancellation Requested'&& data?.data?.status !== 'Undelivered' && (
                 <>
                   {data?.data?.payment_status !== 'unpaid' && (
                     <div className="space-y-2 mt-4">
@@ -476,12 +477,15 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                       </div>
 
                       <div className="flex flex-wrap gap-2 mt-2">
-                        <Button
-                          onClick={() => handleShiprocketAction("pickup", pickupDate)}
-                          disabled={loadingAction || data?.data?.status !== 'Pending'}
-                        >
-                          Request Pickup
-                        </Button>
+                        {data?.data?.status === 'Pending' && (
+                          <Button
+                            onClick={() => handleShiprocketAction("pickup", pickupDate)}
+                            disabled={loadingAction}
+                            /*disabled={loadingAction || data?.data?.status !== 'Pending'}*/
+                          >
+                            Request Pickup
+                          </Button>
+                        )}
                         <Button
                           onClick={() => handleShiprocketAction("manifest")}
                           disabled={data?.data?.status === 'Pending' || loadingAction}
