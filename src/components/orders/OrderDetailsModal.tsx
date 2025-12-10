@@ -460,31 +460,31 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                   <div className="space-y-2 mt-4">
                     <h4 className="font-medium text-sm text-gray-700">Shiprocket</h4>
 
-                    <div className="flex items-center gap-2">
-                      <label htmlFor="pickup-date" className="text-md text-gray-600">
-                        Pickup Date
-                      </label>
-                      <input
-                        id="pickup-date"
-                        type="date"
-                        className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        value={pickupDate}
-                        min={minDate}
-                        max={maxDate}
-                        onChange={(e) => setPickupDate(e.target.value)}
-                      />
-                    </div>
+                     {data?.data?.status === 'Pending' && (
+                      <div className="flex items-center gap-2">
+                        <label htmlFor="pickup-date" className="text-md text-gray-600">
+                          Pickup Date
+                        </label>
+                        <input
+                          id="pickup-date"
+                          type="date"
+                          className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          value={pickupDate}
+                          min={minDate}
+                          max={maxDate}
+                          onChange={(e) => setPickupDate(e.target.value)}
+                        />
+                      </div>
+                     )}
 
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {data?.data?.status === 'Pending' && (
-                        <Button
-                          onClick={() => handleShiprocketAction("pickup", pickupDate)}
-                          disabled={loadingAction}
-                          /*disabled={loadingAction || data?.data?.status !== 'Pending'}*/
-                        >
-                          Request Pickup
-                        </Button>
-                      )}
+                      <Button
+                        onClick={() => handleShiprocketAction("pickup", pickupDate)}
+                        disabled={loadingAction || data?.data?.status !== 'Pending'}
+                      >
+                        Request Pickup
+                      </Button>
+                      
                       <Button
                         onClick={() => handleShiprocketAction("manifest")}
                         disabled={data?.data?.status === 'Pending' || loadingAction}
