@@ -1,5 +1,5 @@
 import { NavLink, useParams } from 'react-router-dom';
-import { Settings, Package, ShoppingCart, Users, User, FolderTree, Megaphone, BarChart, Ticket, Library, Star, Image } from 'lucide-react';
+import { Settings, Package, ShoppingCart, Users, User, FolderTree, Megaphone, BarChart, Ticket, Library, Star, Image, Video } from 'lucide-react';
 
 export default function StoreNav() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +19,7 @@ export default function StoreNav() {
     // { to: `/store/${id}/reviews`, icon: Star, label: 'Reviews' },
     // { to: `/store/${id}/clients`, icon: Star, label: 'Clients' },
     { to: `/store/${id}/testimonials`, icon: Star, label: 'Testimonials' },
+    { to: `/store/${id}/shopByVideos`, icon: Video, label: 'Videos' },
   ];
 
   return (
@@ -33,7 +34,7 @@ export default function StoreNav() {
                 className={({ isActive }) =>
                   `inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 ${
                     isActive
-                      ? 'border-red-600 text-red-600'
+                      ? 'border-red-600  text-red-600'
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   }`
                 }

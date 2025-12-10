@@ -2,7 +2,7 @@ export const baseUrl = 'https://ecomapi.ftdigitalsolutions.org';
 // export const baseUrl = 'https://test-ecomapi.justvy.in';
 // const baseUrl ='http://82.29.161.36'
 
-const multiVendor = `${baseUrl}/create_multivendor_users/`;5
+const multiVendor = `${baseUrl}/create_multivendor_users/`;
 const multiVendorLogin=`${baseUrl}/multivendor_user_login/`;
 const product=`${baseUrl}/api/products/`;
 const categories=`${baseUrl}/api/categories/`;
