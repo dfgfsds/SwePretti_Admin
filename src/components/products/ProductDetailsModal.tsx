@@ -1,12 +1,10 @@
 import React from 'react';
-import { Trash2Icon, TrashIcon, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Product } from '../../types/product';
 import Button from '../Button';
-import { InvalidateQueryFilters, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getSizesApi, getVariantsProductApi } from '../../Api-Service/Apis';
-import axios from 'axios';
-import ApiURl from '../../Api-Service/ApiUrls';
-import { toast } from 'react-toastify';
+
 interface ProductDetailsModalProps {
   product: any;
   onClose: () => void;
@@ -14,8 +12,6 @@ interface ProductDetailsModalProps {
 }
 
 export default function ProductDetailsModal({ product, onClose, onEdit }: ProductDetailsModalProps) {
-  const [confirmData, setConfirmData] = React.useState<{ id: string, type: 'size' | 'variant' } | null>(null);
-  const queryClient = useQueryClient();
 
   const productId: any = product?.id;
   const VariantData: any = useQuery({
@@ -28,30 +24,6 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
     queryFn: () => getSizesApi(`/product/${productId}`),
   });
 
-    const handleConfirmDelete = async () => {
-    if (!confirmData) return;
-    const { id, type } = confirmData;
-    try {
-      const updateApi = await axios.delete(
-        type === "size"
-          ? `${ApiURl?.sizes}/${id}/`
-          : `${ApiURl?.variants}/${id}/`,
-        { data: { deleted_by: "admin" } }
-      );
-      if (updateApi) {
-        queryClient.invalidateQueries(['VariantData'] as InvalidateQueryFilters);
-        queryClient.invalidateQueries(['getSizesData'] as InvalidateQueryFilters);
-        toast.success(
-          `${type === "size" ? "Size" : "Variant"} deleted successfully!`
-        );
-        setConfirmData(null); // Close modal
-      }
-    } catch (error) {
-      toast.error(`Failed to delete ${type}`);
-      console.error(error);
-    }
-  };
-
   // console.log(VariantData?.data?.data?.message,sizesData?.data?.data?.message)
   // const matchingProductsArray = getCartitemsData?.data?.data?.map((item: any) => {
   //   const matchingProduct = products?.data?.find((product: any) => product.id === item.product);
@@ -59,6 +31,9 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
   //   const matchingSize =sizesData?.data?.data?.message?.find((size: any) => size.id === item.product_size);
 
 
+
+
+  console.log(productId)
   const matchingVariant = VariantData?.data?.data?.message?.find(
     (variant: any) => variant?.product_id === productId
   );
@@ -89,8 +64,8 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
 
             <h3 className="text-lg font-semibold text-gray-900">{product?.name} <span className='text-slate-600 ml-3'>
               {/* {product?.weight} g */}
-              {product?.brand_name}
-            </span></h3>
+              {product?.brand_name} 
+              </span></h3>
             {/* <p className="mt-1 text-sm text-gray-500">{product?.description}</p> */}
             <div dangerouslySetInnerHTML={{ __html: product?.description }} className=" quill-content" />
 
@@ -113,69 +88,32 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
 
               <div className="mt-2 space-y-4">
                 {VariantData?.data?.data?.message?.map((variety: any, index: any) => (
-                  <div
-                    key={index}
-                    className="border rounded-lg p-3 shadow-sm relative hover:shadow-md transition-all"
-                  >
-                    {/* Variant Delete Icon */}
-                    <button
-                      onClick={() => setConfirmData({ id: variety.id, type: "variant" })}
-                      className="absolute top-3 right-3 text-red-600 hover:text-red-800"
-                      title="Delete Variant"
-                    >
-                      <Trash2Icon size={16} />
-                    </button>
-
-                    <div className="flex items-center gap-4">
-                      {/* Variant Image */}
-                      {variety?.product_variant_image_urls?.length > 0 ? (
+                  <div key={index} className="border rounded-lg p-4">
+                    <div className="flex items-center">
+                      {variety.product_variant_image_urls?.lenth && (
                         <img
                           src={variety.product_variant_image_urls[0]}
-                          className="h-20 w-20 rounded-md object-cover border"
-                          alt="Variant"
+                          // alt={variety.color}
+                          className="h-16 w-16 rounded object-cover"
                         />
-                      ) : (
-                        <div className="h-20 w-20 rounded-md bg-gray-200 flex items-center justify-center text-gray-400">
-                          No Image
-                        </div>
                       )}
-
-                      {/* Variant Title & Sizes */}
-                      <div className="flex-1">
-                        <h5 className="text-base font-semibold text-gray-900 mb-2 capitalize">
-                          {variety.product_variant_title}
-                        </h5>
-
-                        {/* Sizes List */}
-                        <div className="flex flex-wrap gap-2">
-                          {sizesData?.data?.data?.message
-                            ?.filter((size: any) => size.variant_id === variety.id)
-                            .map((size: any, sizeIndex: any) => (
-                              <div
-                                key={sizeIndex}
-                                className="flex items-center gap-2 bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs shadow-sm"
-                              >
-                                {size.product_size} ({size.product_size_stock_quantity})
-
-                                {/* Delete Size Icon */}
-                                <button
-                                  onClick={() => setConfirmData({ id: size.id, type: "size" })}
-                                  className="text-red-500 hover:text-red-700"
-                                  title="Delete Size"
-                                >
-                                  <Trash2Icon size={14} />
-                                </button>
-                              </div>
-                            ))}
+                      <div className="ml-4">
+                        <h5 className="text-sm font-medium text-gray-900">{variety.product_variant_title}</h5>
+                        <div className="mt-1 flex flex-wrap gap-2">
+                          {sizesData?.data?.data?.message?.map((size: any, sizeIndex: any) => (
+                            <span
+                              key={sizeIndex}
+                              className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800"
+                            >
+                              {size.product_size} ({size.product_size_stock_quantity})
+                            </span>
+                          ))}
                         </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-
-
-
             </div>
           </div>
 
@@ -185,36 +123,6 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
           </div>
         </div>
       </div>
-
-      {confirmData && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg w-96">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Confirm Delete
-            </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete this {confirmData.type}?
-              This action cannot be undone.
-            </p>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setConfirmData(null)}
-                className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

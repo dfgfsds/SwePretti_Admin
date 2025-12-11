@@ -25,6 +25,7 @@ interface ProductModalProps {
 export const ProductSchema = Yup.object().shape({
   // 🔹 Basic Details
   name: Yup.string().required("Product name is required"),
+  slug_name: Yup.string().required("Slug name is required"),
   description: Yup.string().required("Description is required"),
 
   // 🔹 Category and Brand
@@ -84,8 +85,8 @@ export const ProductSchema = Yup.object().shape({
   //   .min(1, "At least one product image is required")
   //   .of(Yup.mixed().required("Image is required")),
 
-  // // 🔹 Featured Product
-  // is_featured: Yup.boolean().default(false),
+  // 🔹 Featured Product
+  is_featured: Yup.boolean().default(false),
 
   // 🔹 Keywords & Meta Tags (converted to array)
   keywords: Yup.array()
@@ -158,25 +159,26 @@ export const ProductSchema = Yup.object().shape({
           .of(Yup.mixed().required("Variant image is required")),
 
         // Sizes (if you have size section)
-        // Sizes (if you have size section)
         sizes: Yup.array()
-          .of(
-            Yup.object().shape({
-              product_size: Yup.string()
-                .required("Size label is required"),
-
-              product_size_price: Yup.number()
-                .typeError("Size price must be a number")
-                .required("Size price is required")
-                .min(1, "Size price must be greater than 0"),
-
-              // product_size_stock: Yup.number()
-              //   .typeError("Size stock must be a number")
-              //   .required("Size stock is required")
-              //   .min(0, "Size stock cannot be negative"),
-            })
-          )
-          .nullable(),
+        .of(
+          Yup.object().shape({
+            product_size: Yup.string().required("Size label is required"),
+            product_size_price: Yup.number()
+              .typeError("Size price must be a number")
+              .required("Size price is required")
+              .min(1, "Size price must be greater than 0"),
+            product_size_stock_quantity: Yup.number()
+              .typeError("Size stock must be a number")
+              .min(0, "Size stock cannot be negative")
+              .notRequired(),
+          })
+        )
+        .nullable()
+        .transform((value, originalValue) => {
+          // remove empty objects so validation won't fail on blank sizes
+          if (!Array.isArray(originalValue)) return [];
+          return originalValue.filter((obj: any) => obj?.product_size || obj?.product_size_price);
+        })
       })
     )
     .nullable(),
@@ -222,6 +224,7 @@ export default function ProductModal({
     queryKey: ["getCategoriesWithSubcategoriesData", id],
     queryFn: () => getCategoriesWithSubcategoriesApi(`vendor/${id}/`),
   })
+  
   const handleCategoryChange = (selectedOption: any) => {
     setValue('category', selectedOption?.value);
     setValue('subcategory', null);
@@ -233,6 +236,28 @@ export default function ProductModal({
       })) || []
     );
   };
+
+  useEffect(() => {
+    if (productForm?.category) {
+      const selectedCat = data?.data?.find(
+        (cat: any) => cat?.id === productForm.category
+      );
+
+      const subOptions =
+        selectedCat?.subcategories?.map((sub: any) => ({
+          value: sub.id,
+          label: sub.name,
+        })) || [];
+
+      setSubcategoryOptions(subOptions);
+
+      // Restore selected subcategory
+      if (productForm?.subcategory) {
+        setValue("subcategory", productForm.subcategory);
+      }
+    }
+  }, [productForm, data, setValue]);
+
 
   const categoryOptions = data?.data?.map((cat: any) => ({
     value: cat?.id,
@@ -262,6 +287,7 @@ export default function ProductModal({
 
   useEffect(() => {
     setValue('name', productForm?.name);
+    setValue('slug_name', productForm?.slug_name);
     setValue('price', productForm?.price);
     setValue('discount', productForm?.discount);
     setValue('category', productForm?.category);
@@ -330,8 +356,9 @@ export default function ProductModal({
 
     const payload = {
       product: {
-        ...(productForm ? '' : { vendor: id }),
+        ...(productForm ? {} : { vendor: id }),
         name: data?.name,
+        slug_name: data?.slug_name,
         brand_name: data?.brand_name,
         description: data?.description,
         description_2: data?.description_2,
@@ -344,6 +371,8 @@ export default function ProductModal({
         breadth: data?.breadth,
         height: data?.height,
         discount: data?.discount,
+        category: data?.category,
+        subcategory: data?.subcategory, 
         stock_quantity: data?.stock_quantity,
         ...(productForm
           ? {}
@@ -440,15 +469,23 @@ export default function ProductModal({
             </button>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl mx-auto">
+            {/* {JSON.stringify(errors)} */}
             <h1 className='font-bold'>{productForm ? 'Edit Products' : 'Products Create'}</h1>
             <div className='grid grid-cols-1 gap-2'>
 
-              <div className='col-span-12 lg:col-span-12'>
+              <div className='col-span-6 lg:col-span-6'>
                 <Input label="Name" required {...register('name', { required: true })} />
                 {errors.name && (
                   <p className="text-red-500 text-sm mt-1">{typeof errors.name?.message === 'string' ? errors.name.message : ''}</p>
                 )}
               </div>
+               <div className='col-span-6 lg:col-span-6'>
+                <Input label="Slug Name" required {...register('slug_name', { required: true })} />
+                {errors.slug_name && (
+                  <p className="text-red-500 text-sm mt-1">{typeof errors.slug_name?.message === 'string' ? errors.slug_name.message : ''}</p>
+                )}
+              </div>
+              
               <div className='col-span-12 lg:col-span-12 py-1'>
                 <ImageUpload required images={images} onChange={setImages} />
               </div>
@@ -476,7 +513,10 @@ export default function ProductModal({
                       {...field}
                       options={categoryOptions}
                       placeholder="Select Category"
-                      onChange={handleCategoryChange}
+                      onChange={(selected: any) => {
+                        field.onChange(selected?.value);
+                        handleCategoryChange(selected);
+                      }}
                       value={categoryOptions.find((opt: any) => opt.value === field.value) || null}
                     />
                   )}
@@ -499,7 +539,9 @@ export default function ProductModal({
                       placeholder="Select Subcategory"
                       isDisabled={!subcategoryOptions.length}
                       value={subcategoryOptions.find((opt: any) => opt.value === field.value) || null}
-                      onChange={(selected: any) => setValue('subcategory', selected?.value)}
+                      onChange={(selected: any) => {
+                        field.onChange(selected?.value);
+                      }}
                     />
                   )}
                 />
@@ -839,17 +881,17 @@ export default function ProductModal({
                 </div>
               ))}
 
-              <div className="flex justify-between items-center mb-4">
+              {/* <div className="flex justify-between items-center mb-4">
                 <Button
                   type="button"
                   onClick={() => appendVariety({ color: '' })}
-                  // variant="outline"
+                  variant="outline"
                   className="text-sm"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Variety
                 </Button>
-              </div>
+              </div> */}
             </div>
             {errorMessage && (
               <p className="text-red-500 mt-2">{errorMessage}</p>
