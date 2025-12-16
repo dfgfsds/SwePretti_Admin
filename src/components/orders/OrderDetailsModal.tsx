@@ -244,7 +244,7 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                     </div>
 
                     <div className='flex justify-between items-center'>
-                      {!(data?.data?.status === 'Cancelled' || data?.data?.status === 'Delivered' || data?.data?.status === 'Cancelled/Refunded') && (
+                      {!(data?.data?.status === 'Cancelled/Refunded') && (
                         <div>
                           <label className="block text-md mb-2 font-medium text-black">Update Status</label>
                           <select
@@ -454,20 +454,33 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
               </div>
 
               {/* Shiprocket Actions */}
-              {data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Cancelled' && data?.data?.status !== 'Failed' && data?.data?.status !== 'Cancellation Requested' && (
+              {data?.data?.delivery_partner === 'shiprocket' && data?.data?.status === 'Pending' && (
                 <>
-                  {data?.data?.payment_status !== 'unpaid' && (
-                    <div className="space-y-2 mt-4">
-                      <h4 className="font-medium text-sm text-gray-700">Shiprocket</h4>
+                  <div className="w-full bg-white rounded-xl p-2  shadow-sm mt-5">
 
-                      <div className="flex items-center gap-2">
-                        <label htmlFor="pickup-date" className="text-md text-gray-600">
+                    {/* Title */}
+                    <h4 className="font-semibold text-[15px] text-gray-800 mb-3">
+                      Shiprocket
+                    </h4>
+
+                    {/* Row: Date + Button */}
+                    <div className="flex items-center justify-between gap-3">
+
+                      {/* Pickup Date Input */}
+                      <div className="flex flex-col w-1/2">
+                        <label
+                          htmlFor="pickup-date"
+                          className="text-[13px] text-gray-600 mb-1 font-medium"
+                        >
                           Pickup Date
                         </label>
+
                         <input
                           id="pickup-date"
                           type="date"
-                          className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="border border-gray-300 rounded-lg px-3 py-2 text-sm
+               focus:outline-none focus:ring-2 focus:ring-indigo-500
+               disabled:bg-gray-100 disabled:text-gray-400"
                           value={pickupDate}
                           min={minDate}
                           max={maxDate}
@@ -475,77 +488,89 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                         />
                       </div>
 
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <Button
-                          onClick={() => handleShiprocketAction("pickup", pickupDate)}
-                          disabled={loadingAction || data?.data?.status !== 'Pending'}
-                        >
-                          Request Pickup
-                        </Button>
-                        <Button
-                          onClick={() => handleShiprocketAction("manifest")}
-                          disabled={data?.data?.status === 'Pending' || loadingAction}
-                        >
-                          Generate Manifest
-                        </Button>
-                        <Button
-                          onClick={() => handleShiprocketAction("label")}
-                          disabled={data?.data?.status === 'Pending' || loadingAction}
-                        >
-                          Generate Label
-                        </Button>
-                        <Button
-                          onClick={() => handleShiprocketAction("invoice")}
-                          disabled={data?.data?.status === 'Pending' || loadingAction}
-                        >
-                          Generate Invoice
-                        </Button>
-                      </div>
+                      {/* Button */}
+                      <Button
+                        className="h-[42px] px-5 bg-indigo-600 text-white rounded-lg font-medium  mt-4
+               hover:bg-indigo-700 transition disabled:bg-gray-300 whitespace-nowrap"
+                        onClick={() => handleShiprocketAction("pickup", pickupDate)}
+                        disabled={loadingAction || data?.data?.status !== "Pending"}
+                      >
+                        Request Pickup
+                      </Button>
                     </div>
-                  )}
+                  </div>
                 </>
               )}
 
 
-              {/* Show Links */}
-              <div className="mt-4">
-                {pdfLinks.manifest && (
-                  <p>
-                    Manifest:{" "}
-                    <a
-                      href={pdfLinks.manifest}
-                      target="_blank"
-                      className="text-blue-600 underline"
-                    >
-                      Download
-                    </a>
-                  </p>
-                )}
-                {pdfLinks.label && (
-                  <p>
-                    Label:{" "}
-                    <a
-                      href={pdfLinks.label}
-                      target="_blank"
-                      className="text-blue-600 underline"
-                    >
-                      Download
-                    </a>
-                  </p>
-                )}
-                {pdfLinks.invoice && (
-                  <p>
-                    Invoice:{" "}
-                    <a
-                      href={pdfLinks.invoice}
-                      target="_blank"
-                      className="text-blue-600 underline"
-                    >
-                      Download
-                    </a>
-                  </p>
-                )}
-              </div>
+              {data?.data?.status === 'Shipped' && data?.data?.status === 'Out For Delivery' && data?.data?.status !== 'Processing' && data?.data?.delivery_partner === 'shiprocket' && (
+                <>
+                  {/* Shiprocket Actions */}
+                  <div className="space-y-2 mt-4">
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Button
+                        onClick={() => handleShiprocketAction("manifest")}
+                        disabled={data?.data?.status === 'Pending' || loadingAction}
+                      >
+                        Generate Manifest
+                      </Button>
+                      <Button
+                        onClick={() => handleShiprocketAction("label")}
+                        disabled={data?.data?.status === 'Pending' || loadingAction}
+                      >
+                        Generate Label
+                      </Button>
+                      <Button
+                        onClick={() => handleShiprocketAction("invoice")}
+                        disabled={data?.data?.status === 'Pending' || loadingAction}
+                      >
+                        Generate Invoice
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Show Links */}
+                  <div className="mt-4">
+                    {pdfLinks.manifest && (
+                      <p>
+                        Manifest:{" "}
+                        <a
+                          href={pdfLinks.manifest}
+                          target="_blank"
+                          className="text-blue-600 underline"
+                        >
+                          Download
+                        </a>
+                      </p>
+                    )}
+                    {pdfLinks.label && (
+                      <p>
+                        Label:{" "}
+                        <a
+                          href={pdfLinks.label}
+                          target="_blank"
+                          className="text-blue-600 underline"
+                        >
+                          Download
+                        </a>
+                      </p>
+                    )}
+                    {pdfLinks.invoice && (
+                      <p>
+                        Invoice:{" "}
+                        <a
+                          href={pdfLinks.invoice}
+                          target="_blank"
+                          className="text-blue-600 underline"
+                        >
+                          Download
+                        </a>
+                      </p>
+                    )}
+                  </div>
+
+                </>
+              )}
             </>
           )}
 

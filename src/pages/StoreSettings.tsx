@@ -19,6 +19,7 @@ import formatDateTime from '../lib/utils'
 import Coupons from './Coupons/Coupons';
 import ApiUrls from '../Api-Service/ApiUrls';
 import axios from 'axios';
+import SocialMedia from '../components/SocialMedia';
 
 const subscriptionPlans = [
   { id: 'monthly', name: 'Monthly', price: 1000, duration: 1, durationUnit: 'month' },
@@ -761,7 +762,7 @@ export default function StoreSettings() {
               </div>
             </div>
           </div>
-
+            <SocialMedia />
         </div>
       </div>
 
