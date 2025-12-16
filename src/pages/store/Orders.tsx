@@ -211,7 +211,7 @@ export default function Orders() {
             ) : (
               <>
                 <img className='size-60 mx-auto' src={EmptyBox} />
-                <div className='text-center text-red-800 font-bold'>No Orders Found</div>
+                <div className='text-center text-blue-800 font-bold'>No Orders Found</div>
               </>
             )}</>)}
       </div>

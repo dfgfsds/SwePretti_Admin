@@ -6,7 +6,7 @@ import { postLoginInAPi } from '../Api-Service/authendication';
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
-import Logo from '../assets/image/Logo.jpeg'
+import Logo from '../assets/image/Logo.png'
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function Login() {
   const [error, setError] = useState<any>();
   const {
     register,
-    handleSubmit,  
+    handleSubmit,
     formState: { errors },
   } = useForm();
 

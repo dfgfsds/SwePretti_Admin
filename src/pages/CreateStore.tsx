@@ -183,7 +183,7 @@ export default function CreateStore() {
             </div>
           </form>
         </div>
-      </div>
+      </div> 
       <PaymentModel
         vendorId={vendorId}
         open={openModal}

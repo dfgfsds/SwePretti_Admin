@@ -129,7 +129,7 @@ export default function ProductsTable({ products, onEdit, onView, isLoading }: P
                           <tr key={product.id}>
                             <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">{index + 1}</td>
                             <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900 flex gap-2">
-                              <img src={product?.image_urls[0] ? product?.image_urls[0] : 'https://i.ibb.co/Mn13jQQ/empty.png'} className='w-16 h-16' />
+                              <img src={product?.image_urls[0]} className='w-16 h-16' />
                               {product.name?.length > 20 ? (
                                 <div>{product.name.slice(0, 20)}...</div>
                               ) : (
@@ -188,7 +188,7 @@ export default function ProductsTable({ products, onEdit, onView, isLoading }: P
           ) : (
             <>
               <img className='size-60 mx-auto' src={EmptyBox} />
-              <div className='text-center text-red-800 font-bold'>No Products Found</div>
+              <div className='text-center text-blue-800 font-bold'>No Products Found</div>
             </>
           )}
 

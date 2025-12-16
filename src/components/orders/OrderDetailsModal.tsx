@@ -252,7 +252,7 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                             value={data?.data?.status}
                             onChange={(e) => handleUpadteStatus(e.target.value)}
                           >
-                            {["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map((status) => (
+                            {["Pending", "Shipped", "Cancelled", "Delivered", "Out For Delivery", "Cancelled/Refunded", "Processing"].map((status) => (
                               <option key={status} value={status}>{status}</option>
                             ))}
                           </select>
@@ -263,7 +263,8 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                         <>
                           {data?.data?.payment_status !== 'unpaid' && (
                             <div className="mt-4">
-                              {(data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Failed') && (
+                              {/* {(data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Failed') && ( */}
+                              {data?.data?.status !== 'Cancelled/Refunded' && (
                                 <button
                                   className='bg-red-500 p-2 text-white rounded-md hover:bg-red-600'
                                   onClick={() => setShowRefundForm(!showRefundForm)}
