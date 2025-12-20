@@ -47,6 +47,7 @@ export function AddressForm({ openModal, handleClose, editData, setEditData, pic
       setValue('landmark', editData?.landmark || '');
       setValue('is_primary', editData?.is_primary || false);
       setValue('selected_address', editData?.selected_address || false);
+      setValue('pickup_location', editData?.pickup_location || false);
     }
   }, [editData, setValue]);
 
@@ -59,7 +60,7 @@ export function AddressForm({ openModal, handleClose, editData, setEditData, pic
     const formattedData = {
       vendor: id,
       company_name: "userName",
-      pickup_location: "madurai",
+      pickup_location: data?.pickup_location || '',
       address_line1: data.address_line1,
       address_line2: data.address_line2,
       address_type: data.address_type,
@@ -82,6 +83,7 @@ export function AddressForm({ openModal, handleClose, editData, setEditData, pic
           queryClient.invalidateQueries(['getAddressData'] as InvalidateQueryFilters);
           handleClose();
           setLoading(false);
+          reset();
         }
       } catch (error) {
         console.error(error);
@@ -94,6 +96,7 @@ export function AddressForm({ openModal, handleClose, editData, setEditData, pic
           queryClient.invalidateQueries(['postGoalType'] as InvalidateQueryFilters);
           handleClose();
           setLoading(false);
+          reset();
         }
       } catch (error) {
         console.error(error);
@@ -311,7 +314,7 @@ export function AddressForm({ openModal, handleClose, editData, setEditData, pic
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex gap-2"
+              className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700-300 disabled:opacity-50 flex gap-2"
             >
               Save {loading ? (<Loader className="animate-spin" size={20} />) : ''}
             </button>

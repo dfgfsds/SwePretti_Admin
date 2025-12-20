@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {  ArrowLeft, Store, UserCircle } from 'lucide-react';
-import Logo from '../assets/image/Logo1.jpeg'
+import Logo from '../assets/image/Logo.png'
 
 export default function Navbar() {
   const location = useLocation();
@@ -22,7 +22,7 @@ const userId=localStorage.getItem('userId');
         <div className="flex justify-between h-16">
           <div className="flex">
             <div  className="flex items-center">
-              <img  src={Logo}  className="h-16 w-full"/>
+              <img  src={Logo}  className="h-16 w-auto"/>
             </div>
           </div>
 

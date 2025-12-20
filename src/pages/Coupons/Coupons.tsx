@@ -50,7 +50,7 @@ function Coupons({ userId }: any) {
 
                         <div className="absolute top-3 right-3 flex gap-2">
                             <button
-                                className="p-2 rounded-full bg-yellow-100 hover:bg-yellow-200 transition"
+                                className="p-2 rounded-full bg-yellow-100 hover:bg-red-700 transition"
                                 title="Edit Coupon"
                                 onClick={() => { setCouponModal(!couponModal), setEditData(coupon) }}
                             >

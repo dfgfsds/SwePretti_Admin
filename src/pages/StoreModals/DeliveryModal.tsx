@@ -482,7 +482,7 @@ function DeliveryModal({ handleClose, vendorSiteDetails, deliveryEditData }: any
                         >Cancel</button>
                         <button
                             type="submit"
-                            className="bg-blue-900 text-white px-4 py-2 rounded"
+                            className="bg-red-600 text-white px-4 py-2 rounded"
                             disabled={loading}
                         >{loading ? (<div className="flex justify-between gap-1">Loading... <Loader /></div>) : 'Submit'}  </button>
                     </div>
