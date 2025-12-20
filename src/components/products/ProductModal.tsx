@@ -360,6 +360,7 @@ export default function ProductModal({
         name: data?.name,
         slug_name: data?.slug_name,
         brand_name: data?.brand_name,
+        slug_name: data?.slug_name,
         description: data?.description,
         description_2: data?.description_2,
         commission: data?.commission,
@@ -479,13 +480,9 @@ export default function ProductModal({
                   <p className="text-red-500 text-sm mt-1">{typeof errors.name?.message === 'string' ? errors.name.message : ''}</p>
                 )}
               </div>
-               <div className='col-span-6 lg:col-span-6'>
+              <div className='col-span-6 lg:col-span-6'>
                 <Input label="Slug Name" required {...register('slug_name', { required: true })} />
-                {errors.slug_name && (
-                  <p className="text-red-500 text-sm mt-1">{typeof errors.slug_name?.message === 'string' ? errors.slug_name.message : ''}</p>
-                )}
               </div>
-              
               <div className='col-span-12 lg:col-span-12 py-1'>
                 <ImageUpload required images={images} onChange={setImages} />
               </div>
@@ -881,7 +878,7 @@ export default function ProductModal({
                 </div>
               ))}
 
-              {/* <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4">
                 <Button
                   type="button"
                   onClick={() => appendVariety({ color: '' })}
@@ -891,7 +888,7 @@ export default function ProductModal({
                   <Plus className="h-4 w-4 mr-2" />
                   Add Variety
                 </Button>
-              </div> */}
+              </div>
             </div>
             {errorMessage && (
               <p className="text-red-500 mt-2">{errorMessage}</p>
