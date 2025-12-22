@@ -1,6 +1,5 @@
 import React from 'react';
-import { Trash2Icon, TrashIcon, X } from 'lucide-react';
-import { Product } from '../../types/product';
+import { Trash2Icon, X } from 'lucide-react';
 import Button from '../Button';
 import { InvalidateQueryFilters, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSizesApi, getVariantsProductApi } from '../../Api-Service/Apis';
@@ -28,7 +27,7 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
     queryFn: () => getSizesApi(`/product/${productId}`),
   });
 
-    const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async () => {
     if (!confirmData) return;
     const { id, type } = confirmData;
     try {
@@ -52,20 +51,36 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
     }
   };
 
-  // console.log(VariantData?.data?.data?.message,sizesData?.data?.data?.message)
-  // const matchingProductsArray = getCartitemsData?.data?.data?.map((item: any) => {
-  //   const matchingProduct = products?.data?.find((product: any) => product.id === item.product);
-  //   const matchingVariant = VariantData?.data?.data?.message?.find((variant: any) => variant.id === item.product_variant);
-  //   const matchingSize =sizesData?.data?.data?.message?.find((size: any) => size.id === item.product_size);
+  const handleUpdateVariant = async (variant: any) => {
+    try {
+      const updateApi = await axios.put(`${ApiURl?.variants}/${variant.id}/`,
+        {
+          product_variant_status: !variant.product_variant_status,
+          updated_by: 'admin'
+        })
+      if (updateApi) {
+        queryClient.invalidateQueries(['VariantData'] as InvalidateQueryFilters);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || 'something went wrong, please try again later')
+    }
+  }
 
 
-  const matchingVariant = VariantData?.data?.data?.message?.find(
-    (variant: any) => variant?.product_id === productId
-  );
-
-  const matchingSize = sizesData?.data?.data?.message?.find(
-    (size: any) => size?.product_id === productId
-  );
+  const handleUpdateSize = async (size: any) => {
+    try {
+      const updateApi = await axios.put(`${ApiURl?.sizes}/${size?.id}/`,
+        {
+          product_size_status: !size.product_size_status,
+          updated_by: 'admin'
+        })
+      if (updateApi) {
+        queryClient.invalidateQueries(['getSizesData'] as InvalidateQueryFilters);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || 'something went wrong, please try again later')
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -108,16 +123,15 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
 
             <div className="mt-6">
               {VariantData?.data?.data?.message?.length || sizesData?.data?.data?.message?.length ? (
-                <h4 className="text-sm font-medium text-gray-900">Available Varieties</h4>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">Available Varieties</h4>
               ) : ''}
 
-              <div className="mt-2 space-y-4">
+              {/* <div className="mt-2 space-y-4">
                 {VariantData?.data?.data?.message?.map((variety: any, index: any) => (
                   <div
                     key={index}
                     className="border rounded-lg p-3 shadow-sm relative hover:shadow-md transition-all"
                   >
-                    {/* Variant Delete Icon */}
                     <button
                       onClick={() => setConfirmData({ id: variety.id, type: "variant" })}
                       className="absolute top-3 right-3 text-red-600 hover:text-red-800"
@@ -127,7 +141,6 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
                     </button>
 
                     <div className="flex items-center gap-4">
-                      {/* Variant Image */}
                       {variety?.product_variant_image_urls?.length > 0 ? (
                         <img
                           src={variety.product_variant_image_urls[0]}
@@ -140,13 +153,11 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
                         </div>
                       )}
 
-                      {/* Variant Title & Sizes */}
                       <div className="flex-1">
                         <h5 className="text-base font-semibold text-gray-900 mb-2 capitalize">
                           {variety.product_variant_title}
                         </h5>
 
-                        {/* Sizes List */}
                         <div className="flex flex-wrap gap-2">
                           {sizesData?.data?.data?.message
                             ?.filter((size: any) => size.variant_id === variety.id)
@@ -157,7 +168,6 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
                               >
                                 {size.product_size} ({size.product_size_stock_quantity})
 
-                                {/* Delete Size Icon */}
                                 <button
                                   onClick={() => setConfirmData({ id: size.id, type: "size" })}
                                   className="text-red-500 hover:text-red-700"
@@ -170,6 +180,129 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
                         </div>
                       </div>
                     </div>
+                  </div>
+                ))}
+              </div> */}
+
+              <div className="mt-2 space-y-4">
+                {VariantData?.data?.data?.message?.map((variant: any, index: number) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border bg-white p-6 shadow-sm hover:shadow-md transition"
+                  >
+                    {/* VARIANT HEADER */}
+                    <div className="flex items-center justify-between mb-5">
+                      <h3 className="text-lg font-semibold text-gray-900 capitalize">
+                        {variant?.product_variant_title}
+                      </h3>
+
+                      <div className="flex items-center gap-3">
+                        {/* VARIANT TOGGLE */}
+                        {/* <div
+                          className={`relative w-11 h-6 rounded-full cursor-pointer transition
+              ${variant?.product_variant_status ? "bg-green-500" : "bg-gray-300"}
+            `}
+                        >
+                          <span
+                            className={`absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition-transform
+                ${variant?.product_variant_status ? "translate-x-5" : ""}
+              `}
+                          />
+                        </div> */}
+
+                        <div
+                          onClick={() => handleUpdateVariant(variant)}
+                          className={`relative w-12 h-6 rounded-full cursor-pointer transition
+    ${variant.product_variant_status ? "bg-green-500" : "bg-gray-300"}
+  `}
+                        >
+                          <span
+                            className={`absolute top-[2px] left-[2px] h-5 w-5 bg-white rounded-full transition-transform
+      ${variant.product_variant_status ? "translate-x-6" : ""}
+    `}
+                          />
+                        </div>
+
+                        {/* DELETE VARIANT */}
+                        <button
+                          onClick={() =>
+                            setConfirmData({ id: variant?.id, type: "variant" })
+                          }
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2Icon size={18} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* BODY */}
+                    <div className="flex gap-6 items-start">
+                      {/* IMAGE */}
+                      <div className="h-28 w-28 rounded-xl overflow-hidden border bg-gray-100 flex-shrink-0">
+                        {variant?.product_variant_image_urls?.length > 0 ? (
+                          <img
+                            src={variant.product_variant_image_urls[0]}
+                            alt="Variant"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-gray-400 text-sm">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+
+                      {/* SIZES GRID */}
+                      <div className="grid grid-cols-2 gap-4 w-full max-w-[420px]">
+                        {sizesData?.data?.data?.message
+                          ?.filter((size: any) => size.variant_id === variant.id)
+                          .map((size: any, sizeIndex: number) => (
+                            <div
+                              key={sizeIndex}
+                              className="flex items-center justify-between bg-gray-100 px-4 py-3 rounded-xl"
+                            >
+                              {/* SIZE TEXT */}
+                              <div className="flex flex-col leading-tight">
+                                <span className="text-sm font-semibold text-gray-800 uppercase">
+                                  {size.product_size}
+                                </span>
+                                {/* <span className="text-xs text-gray-500">
+                                  Stock {size.product_size_stock_quantity}
+                                </span> */}
+                              </div>
+
+                              {/* ACTIONS */}
+                              <div className="flex items-center gap-3">
+                                {/* TOGGLE */}
+                                <div
+                                  onClick={() => handleUpdateSize(size)}
+                                  className={`relative w-9 h-5 rounded-full cursor-pointer transition
+    ${size?.product_size_status ? "bg-green-500" : "bg-gray-300"}
+  `}
+                                >
+                                  <span
+                                    className={`absolute top-[2px] left-[2px] h-4 w-4 bg-white rounded-full transition-transform
+      ${size?.product_size_status ? "translate-x-4" : ""}
+    `}
+                                  />
+                                </div>
+
+
+                                {/* DELETE */}
+                                <button
+                                  onClick={() =>
+                                    setConfirmData({ id: size?.id, type: "size" })
+                                  }
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2Icon size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
                   </div>
                 ))}
               </div>
