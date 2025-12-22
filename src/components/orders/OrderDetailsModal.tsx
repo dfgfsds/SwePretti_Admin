@@ -263,8 +263,7 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                         <>
                           {data?.data?.payment_status !== 'unpaid' && (
                             <div className="mt-4">
-                              {/* {(data?.data?.status !== 'Delivered' && data?.data?.status !== 'Cancelled/Refunded' && data?.data?.status !== 'Shipment Failed' && data?.data?.status !== 'Failed') && ( */}
-                              {data?.data?.status !== 'Cancelled/Refunded' && (
+                              {(data?.data?.status !== 'Cancelled/Refunded') && (
                                 <button
                                   className='bg-red-500 p-2 text-white rounded-md hover:bg-red-600'
                                   onClick={() => setShowRefundForm(!showRefundForm)}
@@ -504,74 +503,81 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
               )}
 
 
-              {data?.data?.status === 'Shipped' && data?.data?.status === 'Out For Delivery' && data?.data?.status !== 'Processing' && data?.data?.delivery_partner === 'shiprocket' && (
-                <>
-                  {/* Shiprocket Actions */}
-                  <div className="space-y-2 mt-4">
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      <Button
-                        onClick={() => handleShiprocketAction("manifest")}
-                        disabled={data?.data?.status === 'Pending' || loadingAction}
-                      >
-                        Generate Manifest
-                      </Button>
-                      <Button
-                        onClick={() => handleShiprocketAction("label")}
-                        disabled={data?.data?.status === 'Pending' || loadingAction}
-                      >
-                        Generate Label
-                      </Button>
-                      <Button
-                        onClick={() => handleShiprocketAction("invoice")}
-                        disabled={data?.data?.status === 'Pending' || loadingAction}
-                      >
-                        Generate Invoice
-                      </Button>
+              {(
+                data?.data?.delivery_partner === 'shiprocket' &&
+                (
+                  data?.data?.status === 'Shipped' ||
+                  data?.data?.status === 'Out For Delivery' ||
+                  data?.data?.status === 'Processing'
+                )
+              ) && (
+                  <>
+                    {/* Shiprocket Actions */}
+                    <div className="space-y-2 mt-4">
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <Button
+                          onClick={() => handleShiprocketAction("manifest")}
+                          disabled={data?.data?.status === 'Pending' || loadingAction}
+                        >
+                          Generate Manifest
+                        </Button>
+                        <Button
+                          onClick={() => handleShiprocketAction("label")}
+                          disabled={data?.data?.status === 'Pending' || loadingAction}
+                        >
+                          Generate Label
+                        </Button>
+                        <Button
+                          onClick={() => handleShiprocketAction("invoice")}
+                          disabled={data?.data?.status === 'Pending' || loadingAction}
+                        >
+                          Generate Invoice
+                        </Button>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Show Links */}
-                  <div className="mt-4">
-                    {pdfLinks.manifest && (
-                      <p>
-                        Manifest:{" "}
-                        <a
-                          href={pdfLinks.manifest}
-                          target="_blank"
-                          className="text-blue-600 underline"
-                        >
-                          Download
-                        </a>
-                      </p>
-                    )}
-                    {pdfLinks.label && (
-                      <p>
-                        Label:{" "}
-                        <a
-                          href={pdfLinks.label}
-                          target="_blank"
-                          className="text-blue-600 underline"
-                        >
-                          Download
-                        </a>
-                      </p>
-                    )}
-                    {pdfLinks.invoice && (
-                      <p>
-                        Invoice:{" "}
-                        <a
-                          href={pdfLinks.invoice}
-                          target="_blank"
-                          className="text-blue-600 underline"
-                        >
-                          Download
-                        </a>
-                      </p>
-                    )}
-                  </div>
+                    {/* Show Links */}
+                    <div className="mt-4">
+                      {pdfLinks.manifest && (
+                        <p>
+                          Manifest:{" "}
+                          <a
+                            href={pdfLinks.manifest}
+                            target="_blank"
+                            className="text-blue-600 underline"
+                          >
+                            Download
+                          </a>
+                        </p>
+                      )}
+                      {pdfLinks.label && (
+                        <p>
+                          Label:{" "}
+                          <a
+                            href={pdfLinks.label}
+                            target="_blank"
+                            className="text-blue-600 underline"
+                          >
+                            Download
+                          </a>
+                        </p>
+                      )}
+                      {pdfLinks.invoice && (
+                        <p>
+                          Invoice:{" "}
+                          <a
+                            href={pdfLinks.invoice}
+                            target="_blank"
+                            className="text-blue-600 underline"
+                          >
+                            Download
+                          </a>
+                        </p>
+                      )}
+                    </div>
 
-                </>
-              )}
+                  </>
+                )}
             </>
           )}
 
