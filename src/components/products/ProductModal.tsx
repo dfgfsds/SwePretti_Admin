@@ -360,7 +360,6 @@ export default function ProductModal({
         name: data?.name,
         slug_name: data?.slug_name,
         brand_name: data?.brand_name,
-        slug_name: data?.slug_name,
         description: data?.description,
         description_2: data?.description_2,
         commission: data?.commission,
