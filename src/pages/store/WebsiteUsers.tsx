@@ -198,7 +198,7 @@ const filteredUsers = data?.data?.filter((user: any) =>
             ) : (
               <>
                 <img className='size-60 mx-auto' src={EmptyBox} />
-                <div className='text-center text-red-800 font-bold'>No Customers Found</div>
+                <div className='text-center text-blue-800 font-bold'>No Customers Found</div>
               </>
             )}</>)}
 

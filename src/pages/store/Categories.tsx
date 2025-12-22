@@ -46,6 +46,7 @@ export default function Categories() {
       description: "",
       image: null,
       created_by: "",
+      slug_name: "",
     },
   });
 
@@ -86,6 +87,7 @@ export default function Categories() {
         image: images ? images[0]?.url : '',
         created_by: 'vendor',
         vendor: id,
+        slug_name: data?.slug_name,
       };
 
       if (selectedCategory) {
@@ -96,6 +98,7 @@ export default function Categories() {
           updated_by: 'vendor9',
           name: data?.name,
           image: images ? images[0]?.url : '',
+          slug_name: data?.slug_name,
         };
 
         const updateApi = await updateCategoriesApi(`${selectedCategory?.id}/`, editPayload);
@@ -122,8 +125,17 @@ export default function Categories() {
         }
       }
     } catch (error: any) {
-      console.error("Error submitting category:", error?.response?.data?.non_field_errors);
-      setErrorMessage(error?.response?.data?.non_field_errors || error?.non_field_errors || "Something went wrong. Please try again.");
+      if (error?.response?.data) {
+        const errObj = error.response.data;
+
+        // first key + first message (0th index) mattum eduthukkurom
+        const [key, value] = Object.entries(errObj)[0] || [];
+        const firstMessage = Array.isArray(value) ? value[0] : value;
+
+        setErrorMessage(`${key}: ${firstMessage}`);
+      } else {
+        setErrorMessage('Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -144,6 +156,7 @@ export default function Categories() {
       setValue('description', selectedCategory?.description)
       setValue('depth', selectedCategory?.depth)
       setImages(selectedCategory?.image)
+      setValue('slug_name', selectedCategory?.slug_name)
 
     }
   }, [selectedCategory])
@@ -350,7 +363,7 @@ export default function Categories() {
             ) : (
               <>
                 <img className='size-60 mx-auto' src={EmptyBox} />
-                <div className='text-center text-red-800 font-bold'>No Categories Found</div>
+                <div className='text-center text-blue-800 font-bold'>No Categories Found</div>
               </>
             )}</>)}
       </div>
@@ -370,6 +383,7 @@ export default function Categories() {
 
                 {/* Name */}
                 <Input label="Name" required {...register("name", { required: true })} />
+                <Input label="Slug Name" required {...register("slug_name", { required: true })} />
                 {/* Depth */}
                 {/* <Input label="Depth" {...register("depth")} /> */}
                 {/* Description */}
@@ -393,7 +407,8 @@ export default function Categories() {
 
 
                 <div className="mt-5 sm:mt-6 flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => { reset(), setSelectedCategory(''), setCategoryForm(''), setIsModalOpen(false), setImages([]) }}>
+                  <Button type="button" variant="outline" onClick={() => { reset(), setSelectedCategory(''), 
+                    (''), setIsModalOpen(false), setImages([]) }}>
                     Cancel
                   </Button>
                   <Button type="submit" disabled={loading}>

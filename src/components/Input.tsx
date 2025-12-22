@@ -13,7 +13,7 @@ const Input = React.forwardRef(({ label, type = 'text',disabled, readOnly, error
         readOnly={readOnly}
         className={`w-full px-3 py-1 shadow-lg border ${
           error ? 'border-red-500' : 'border-gray-500'
-        } rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+        } rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500`}
       />
       {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
     </div>

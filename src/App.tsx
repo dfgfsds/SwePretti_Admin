@@ -25,6 +25,7 @@ import CouponsMain from './pages/store/Coupons';
 import ReviewsMain from './pages/store/Reviews';
 import Clients from './pages/store/Clients';
 import Testimonials from './pages/store/Testimonials';
+import ShopByVideos from './pages/store/ShopByVideos';
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
               <Route path="settings" element={<StoreSettings />} />
               <Route path="clients" element={<Clients />} />
               <Route path="testimonials" element={<Testimonials />} />
+              <Route path="shopByVideos" element={<ShopByVideos />} />
             </Route>
           </Route>
           <Route path="*" element={<ErrorPage />} />
