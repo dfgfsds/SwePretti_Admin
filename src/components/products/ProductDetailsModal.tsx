@@ -60,6 +60,7 @@ export default function ProductDetailsModal({ product, onClose, onEdit }: Produc
         })
       if (updateApi) {
         queryClient.invalidateQueries(['VariantData'] as InvalidateQueryFilters);
+        
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.error || 'something went wrong, please try again later')
