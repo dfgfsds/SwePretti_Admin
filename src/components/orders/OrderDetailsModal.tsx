@@ -322,11 +322,11 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
                         {data?.data?.order_items?.map((item: any) => (
                           <div key={item.id} className="py-3 flex justify-between">
                             <div className="flex items-center">
-                              {item.product?.image_urls[0] && (
-                                <img src={item.product.image_urls[0]} className="h-10 w-10 rounded object-cover mr-3" />
+                              {item.product_details?.image_urls[0] && (
+                                <img src={item?.product_details.image_urls[0]} className="h-10 w-10 rounded object-cover mr-3" />
                               )}
                               <div className="text-sm">
-                                <p className="font-medium">{item.product.name}</p>
+                                <p className="font-medium">{item?.product_details?.name}</p>
                               </div>
                             </div>
                             <div className="text-sm text-right">
@@ -340,33 +340,6 @@ export default function OrderDetailsModal({ order, onClose, onUpdateStatus }: Or
 
                     {/* Total */}
                     <div>
-                      {/* 🧾 Order Items List */}
-                      <h4 className="font-medium text-sm text-black">Order Items</h4>
-                      <div className="mt-2 divide-y divide-gray-200">
-                        {data?.order_items?.map((item: any) => (
-                          <div key={item.id} className="py-3 flex justify-between">
-                            <div className="flex items-center">
-                              {item.product?.image_urls?.[0] && (
-                                <img
-                                  src={item.product.image_urls[0]}
-                                  alt={item.product.name}
-                                  className="h-10 w-10 rounded object-cover mr-3"
-                                />
-                              )}
-                              <div className="text-sm">
-                                <p className="font-medium">{item.product?.name}</p>
-                                <p className="text-gray-500 text-xs">{item.product?.category_name}</p>
-                              </div>
-                            </div>
-
-                            <div className="text-sm text-right">
-                              <p>₹{item.price} × {item.quantity}</p>
-                              <p className="font-medium">₹{(item.price * item.quantity).toFixed(2)}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
                       {/* 💰 Price Summary Section */}
                       <div className="border-t pt-4 mt-4 bg-gray-50 p-4 rounded-lg shadow-sm space-y-2">
                         {/* Subtotal */}
